@@ -34,6 +34,7 @@ daycycle () {
 	
 		# Save daily backup
   keep=$(ls $three -1|tail -1)
+	echo "$keep"
   echo "_Cycling through backups:"
   mv ${three}/${KEEP} $WI
   echo "moving "${three}/${KEEP}" into "$WI""
@@ -75,6 +76,15 @@ weekcycle () {
  fi
 }
 
+### Fill the today.hourly directory: 
+	dt=`date +%T`
+	touch ${one}/A.${dt}
+	touch ${one}/B.${dt}
+	touch ${one}/C.${dt}
+	touch ${one}/D.${dt}
+	touch ${one}/E.${dt}
+	touch ${one}/F.${dt}
+	touch ${one}/G.${dt}
  
  main () {
   daycycle
