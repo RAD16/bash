@@ -30,12 +30,24 @@ daycycle () {
 	two="SANDBOX/yesterday.hourly"
 	three="SANDBOX/daybefore.hourly"
 	WI="SANDBOX/dailies/days_1.daily"
+
+### Fill the today.hourly directory: 
+	dt=`date +%H:%M`
+	touch ${one}/A.${dt}
+	touch ${one}/B.${dt}
+	touch ${one}/C.${dt}
+	touch ${one}/D.${dt}
+	touch ${one}/E.${dt}
+	touch ${one}/F.${dt}
+	touch ${one}/G.${dt}
+	
 		# Save daily backup
   keep=$(ls $three -1|tail -1)
   echo "_Cycling through backups:"
   mv ${three}/${KEEP} $WI
+  echo "moving "${three}/${KEEP}" into "$WI""
      check "saving day-3 backup"       
-  rm -rf $three
+  rm -rf ${three}
      check "removing day-3 directory"
 
 # make sure variables set such that the directory is renamed not moved into another directory. 
@@ -75,7 +87,7 @@ weekcycle () {
  
  main () {
   daycycle
-  weekcycle
+#  weekcycle
 }
 
 main
