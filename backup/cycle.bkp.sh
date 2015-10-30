@@ -9,9 +9,9 @@
 # TO DO: function that sends alerts and deletes old backups if backup disk space drops below certain threshold.
 
 #-----Config vars------
-BDIR="/root/soil"
-BPART="/dev/sda-whatev"
-DATE=$(date +%Y-%m-%d_%T)
+backup_dir="/root/soil"
+backup_part="/dev/sda-whatev"
+date=$(date +%Y-%m-%d_%T)
 
 #-------script---------
 # series of functions called by "main ()" function at bottom of script : 
@@ -24,17 +24,17 @@ DATE=$(date +%Y-%m-%d_%T)
 
 echo "----------------  Geology  ---------------"
 echo "--cycling & storing old backups--" 
-echo "scripted in BASH ”
+echo "scripted in BASH"
 echo "----------------------------------------------"
 echo "Building layers...  "
 
 # error logger
 logr () {
- LOGFILE="/var/log/bkp/errlog/$DATE.bkp.errlog"
-  if [ -f $LOGFILE ]; then
-    echo $1 | tee -a $LOGFILE
+ logfile="/var/log/bkp/errlog/${date}.bkp.errlog"
+  if [ -f $logfile ]; then
+    echo $1 | tee -a $logfile
   else
-    echo $1 | tee $LOGFILE
+    echo $1 | tee $logfile
   fi
 }
 # error code checker
@@ -51,39 +51,39 @@ prep () {
 # mount the bkp partition first
   echo "_Mounting backup directory 'Soil':"
 # check if bkp dir is mounted
-  if [ ! -d $BDIR ]; then
+  if [ ! -d $backup_dir ]; then
      # Create bkp directory 
      echo "__Creating backup directory."
-     mkdir $BDIR
+     mkdir $backup_dir
        check "create backup directory"
    fi
 
  # Mount bkp partition to directory. Mount nodev, noexec, nosuid
- MNTOPT="-o nodev,nosuid,noexec"
-   mount $MNTOPT $BPART $BDIR
+ mount_opt="-o nodev,nosuid,noexec"
+   mount $mount_opt $backup_part $backup_dir
      check "mount backup directory"
 }
 
 daycycle () {
  # Recycle backups
-ONE="/root/soil/today.hourly/"
-TWO="/root/soil/yesterday.hourly/"
-THREE="/root/soil/daybefore.hourly/"
+one="/root/soil/today.hourly/"
+two="/root/soil/yesterday.hourly/"
+three="/root/soil/daybefore.hourly/"
 WI="/root/soil/dailies/days_1.daily/"
    # Save daily backup
-  KEEP=$(ls $THREE -1|tail -1)
+  keep=$(ls $three -1|tail -1)
   echo "_Cycling through backups:"
-  mv $THREE/$KEEP $WI
+  mv ${three}/${KEEP} $WI
      check "saving day-3 backup"       
-  rm -rf $THREE
+  rm -rf $three
      check "removing day-3 directory"
 
 # make sure variables set such that the directory is renamed not moved into another directory. 
-  mv $TWO $THREE
+  mv $two $three
      check "day-2 renamed day-3"
-  mv $ONE $TWO
+  mv $one $two
      check "day-1 renamed day-2"
-  mkdir $ONE 
+  mkdir $one 
      check "create day-1 directory"
  }
  
@@ -91,11 +91,11 @@ weekcycle () {
  # Save weekly backup  
  WI="/root/soil/dailies/days_1.daily/"
  WII="/root/soil/dailies/days_2.daily/"
- WEEKS="/root/soil/weeks.weekly/"
-  COUNT=$(ls $WI -1 | wc -l)
-  KEEPW=$(ls $WII -1|tail -1)
- if [ $COUNT -gt 7 ]; then 
-   mv $WII/$KEEPW $WEEKS
+ weeks="/root/soil/weeks.weekly/"
+  count=$(ls $WI -1 | wc -l)
+  keep_week=$(ls $WII -1|tail -1)
+ if [ $count -gt 7 ]; then 
+   mv $WII/${keep_week} $weeks
     check "save weekly backup to weeks directory"
    rm -rf $WII
      check "remove days_2.daily directory"
@@ -110,10 +110,10 @@ weekcycle () {
 
 cleanup () {
  #umount partition
- umount -R $BDIR
+ umount -R $backup_dir
   if [ $? -eq 0 ]; then
     echo "directory unmounted"
-    rm -rf $BDIR
+    rm -rf $backup_dir
       check "remove backup directory"
   else
      echo "ERROR: unmount backup directory failed"
