@@ -1,19 +1,19 @@
-﻿#! /bin/bash
+#! /bin/bash
 
+# ==== Cycle backups ====
 # Cycle through old backups. Keep hourly backups up to three days, then keep one backup per day after that.
-
-# backup-cycle-0.2:  Uses named daily directories e.g. "today," "yesterday," "day_before" etc. and cycles through them daily,
+# cycle.bkp.sh:  Uses named daily directories e.g. "today," "yesterday," "day_before" etc. and cycles through them daily,
 
 # systemd timer/service files should be configured such that recycle script only runs after backup script has finished and isn't running, so they don't run  simultaneously.
 
 # TO DO: function that sends alerts and deletes old backups if backup disk space drops below certain threshold.
 
-#-----Config vars------
+#----- Config variables -----
 backup_dir="/root/soil"
 backup_part="/dev/sda-whatev"
 date=$(date +%Y-%m-%d_%T)
 
-#-------script---------
+#======= script ========
 # series of functions called by "main ()" function at bottom of script : 
     # main () {
     #   prep
@@ -22,13 +22,7 @@ date=$(date +%Y-%m-%d_%T)
     #  cleanup
     # }
 
-echo "----------------  Geology  ---------------"
-echo "--cycling & storing old backups--" 
-echo "scripted in BASH"
-echo "----------------------------------------------"
-echo "Building layers...  "
-
-# error logger
+#----- error logger -----
 logr () {
  logfile="/var/log/bkp/errlog/${date}.bkp.errlog"
   if [ -f $logfile ]; then
@@ -37,7 +31,8 @@ logr () {
     echo $1 | tee $logfile
   fi
 }
-# error code checker
+
+#----- error code checker -----
 check () {
   if [ $? -eq 0 ]; then
     echo "$1 -- done!"
@@ -47,6 +42,7 @@ check () {
   fi
 }
 
+#----- function: mounts and checks backup partition -----
 prep () {
 # mount the bkp partition first
   echo "_Mounting backup directory 'Soil':"
@@ -64,8 +60,9 @@ prep () {
      check "mount backup directory"
 }
 
+#----- Function: cycle daily directories ----- 
 daycycle () {
- # Recycle backups
+ # function variables
 one="/root/soil/today.hourly/"
 two="/root/soil/yesterday.hourly/"
 three="/root/soil/daybefore.hourly/"
@@ -87,6 +84,7 @@ WI="/root/soil/dailies/days_1.daily/"
      check "create day-1 directory"
  }
  
+#----- Function: cycle weekly directories -----
 weekcycle () {
  # Save weekly backup  
  WI="/root/soil/dailies/days_1.daily/"
@@ -108,6 +106,7 @@ weekcycle () {
  fi
 }
 
+#----- Function: unmount backup partitions -----
 cleanup () {
  #umount partition
  umount -R $backup_dir
@@ -121,6 +120,7 @@ cleanup () {
    fi
  }
  
+ #----- MAIN set -----
  main () {
   prep
   daycycle
@@ -128,5 +128,6 @@ cleanup () {
   cleanup
 }
 
+#----- MAIN CALL -----
 main
   check "geology"
