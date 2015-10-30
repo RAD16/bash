@@ -31,15 +31,6 @@ daycycle () {
 	three="SANDBOX/daybefore.hourly"
 	WI="SANDBOX/dailies/days_1.daily"
 
-### Fill the today.hourly directory: 
-	dt=`date +%H:%M`
-	touch ${one}/A.${dt}
-	touch ${one}/B.${dt}
-	touch ${one}/C.${dt}
-	touch ${one}/D.${dt}
-	touch ${one}/E.${dt}
-	touch ${one}/F.${dt}
-	touch ${one}/G.${dt}
 	
 		# Save daily backup
   keep=$(ls $three -1|tail -1)

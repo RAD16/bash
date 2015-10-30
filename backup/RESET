@@ -1,0 +1,17 @@
+#! /bin/bash
+
+rm -r SANDBOX
+mkdir SANDBOX
+
+mkdir SANDBOX/dailies SANDBOX/daybefore.hourly SANDBOX/weeks.weekly SANDBOX/yesterday.hourly SANDBOX/today.hourly
+mkdir SANDBOX/dailies/days_1.daily SANDBOX/dailies/days_2.dailies 
+
+### Fill the today.hourly directory: 
+	dt=`date +%H:%M`
+	touch ${one}/A.${dt}
+	touch ${one}/B.${dt}
+	touch ${one}/C.${dt}
+	touch ${one}/D.${dt}
+	touch ${one}/E.${dt}
+	touch ${one}/F.${dt}
+	touch ${one}/G.${dt}
