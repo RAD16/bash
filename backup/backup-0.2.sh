@@ -1,6 +1,7 @@
 #! /bin/bash
 
-# Backup script for server/owncloud
+#======== Backup script for server/owncloud =======
+
 # Pair with systemd backup.service/backup.timer for hourly system snapshots. 
 
 # backup-0.2: places all backups in a directory "today.hourly" to eventually be cycled by day into  "yesterday.hourly," "daybefore.hourly" (backup-cycle.sh script). 
@@ -22,18 +23,18 @@
 # TO DO: script that triggers deletion of old backups upon low disk space. 
 
 #-----Variables-----
-OPT="-naPh"   # remove 'n' (dry run) option when ready 
-LINK="link-dest=${SEED}"
-DATA="/files/to/back/up/"
-BPART="/dev/sda-whatever/"
-MNTOPT="-o nodev,noexec,nosuid"     # -U 'uuid number here' 
-BDIR="/root/soil"
-TODAY="/root/soil/today.hourly/"
-SEED="/root/soil/seed"  # symlink to latest backup used by rsync to hardlink unchanged files
-LOG="/var/log/bkp/"
-ERRLOG="/var/log/bkp/err/"
-DAY=$(date +%Y-%m-%d)
-DATE=$(date +%Y-%m-%d_%T)
+sync_opt="-naPh"   # remove 'n' (dry run) option when ready 
+link="link-dest=${SEED}"
+data="/files/to/back/up/"
+backup_part="/dev/sda-whatever/"
+mnt_opt="-o nodev,noexec,nosuid"     # -U 'uuid number here' 
+backup_dir="/root/soil"
+today="/root/soil/today.hourly/"
+seed="/root/soil/seed"  # symlink to latest backup used by rsync to hardlink unchanged files
+log="/var/log/bkp/"
+errlog="/var/log/bkp/err/"
+day=$(date +%Y-%m-%d)
+date=$(date +%Y-%m-%d_%T)
 
 #--------Script---------
 # series of functions called by "main ()” at end of script:
@@ -43,16 +44,16 @@ DATE=$(date +%Y-%m-%d_%T)
     #   cleanup
     # } 
 
-echo "CarbonSinc:”
+echo "CarbonSinc:"
 echo "backup scripted in BASH"
 sleep 2
 
 # error logger
 logr () {
- if [ -f $ERRLOG/$DATE.bkp.errlog ]; then
-   echo $1 | tee -a  $ERRLOG/$DATE.bkp. errlog
+ if [ -f $errlog/$date.bkp.errlog ]; then
+   echo $1 | tee -a  $errlog/${date}.bkp.errlog
    else
-    echo $1 | tee $ERRLOG/$DATE.bkp. errlog 
+    echo $1 | tee $errlog/${date}.bkp.errlog 
  fi
 }
 
