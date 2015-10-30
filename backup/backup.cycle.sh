@@ -25,13 +25,13 @@
 
 #----- Variables -----
 sync_opt="-naPh"   # remove 'n' (dry run) option when ready 
-link="link-dest=${SEED}"
 data="/files/to/back/up/"
 backup_part="/dev/sda-whatever/"
 mnt_opt="-o nodev,noexec,nosuid"     # -U 'uuid number here' 
 backup_dir="/root/soil"
 today="/root/soil/today.hourly/"
 seed="/root/soil/seed"  # symlink to latest backup used by rsync to hardlink unchanged files
+link="link-dest=${seed}"
 log="/var/log/bkp/"
 errlog="/var/log/bkp/err/"
 day=$(date +%Y-%m-%d)
@@ -45,10 +45,6 @@ date=$(date +%Y-%m-%d_%T)
     #   cleanup
     # } 
 
-echo "CarbonSinc:"
-echo "backup scripted in BASH"
-sleep 2
-
 # ---- error logger ----
 logr () {
  if [ -f ${errlog}/${date}.bkp.errlog ]; then
@@ -60,32 +56,32 @@ logr () {
 
 # ---- error code checker ----
 check () {
- if [ $? -eq 0 ]; then
-   echo "$1 -- done!"
- else
-   logr "ERROR: $1 failed"
-   exit 1
- fi
+	if [ $? -eq 0 ]; then
+		echo "$1 -- done!"
+	else
+		logr "ERROR: $1 failed"
+		exit 1
+	fi
 }
 
 # ---- function: checks for/mounts needed directories ----
 prep () {
 # check if bkp dir is mounted
-if [ ! -d $backup_dir ]; then
-     # Create bkp directory 
-     mkdir $backup_dir
-      check "Create backup directory"
- fi
-     # Mount bkp partition to directory. 
-   mount $mnt_opt $backup_part $backup_dir
-     check "Mount backup partition"
-      
-   # Check for daily directory
-  if [ ! -d $today ]; then
-      # Create new directory if necessary.
-     mkdir $today    
-      check "Create today's backup directory"
-  fi   
+	if [ ! -d $backup_dir ]; then
+			# Create bkp directory 
+			mkdir $backup_dir
+				check "Create backup directory"
+	fi
+			# Mount bkp partition to directory. 
+		mount $mnt_opt $backup_part $backup_dir
+			check "Mount backup partition"
+				
+		# Check for daily directory
+	if [ ! -d $today ]; then
+				# Create new directory if necessary.
+			mkdir $today    
+				check "Create today's backup directory"
+	fi   
 #    chmod 700 $today    
 #     if [ $? -eq 0 ]; then
 #       echo "Today's backup directory locked by root."
@@ -99,35 +95,35 @@ if [ ! -d $backup_dir ]; then
 # ---- function: rsync snapshot backup ----
 backup () {
 # Run rsync bkp
-if [ -h $SEED ]; then
-  echo "Running rsync..."
-  rsync $sync_opt $link $data ${today/${DATE}.bkp > ${LOG}${DATE}.bkp.log
-    check "rsync backup"
+	if [ -h $seed ]; then
+		echo "Running rsync..."
+		rsync $sync_opt $link $data ${today/${DATE}.bkp > ${LOG}${DATE}.bkp.log
+			check "rsync backup"
 # Remove symlink to previous backup
-  rm -f $SEED
-    check "remove previous seed file" 
+		rm -f $seed
+			check "remove previous seed file" 
 # Symlink to new latest backup
-  ln -s ${today}/${DATE}.bkp $SEED
-    check " symlinking new seed file"
-else 
-  logr "ERROR - Could not locate latest bkp to hardlink. Symlink 'seed' file may need to be created." 
-  exit 1
-fi
+		ln -s ${today}/${date}.bkp $seed
+			check " symlinking new seed file"
+	else 
+		logr "ERROR - Could not locate latest bkp to hardlink. Symlink 'seed' file may need to be created." 
+		exit 1
+	fi
 }
  
 # ---- function: unmounts and removes directories for security ----
 cleanup () { 
 # Unmount bkp directory
-  umount -R  $backup_dir
-     if [ $? -eq 0 ]; then
-       echo "Backup directory unmounted successfully."       
-       # Remove bkp directory
-       rmdir  $backup_dir
-         check "remove backup directory"
-     else
-         logr "ERROR: Failed to unmount backup directory." 
-          exit 1
-     fi     
+	umount -R  $backup_dir
+		if [ $? -eq 0 ]; then
+			echo "Backup directory unmounted successfully."       
+			# Remove bkp directory
+			rmdir  $backup_dir
+				check "remove backup directory"
+		else
+				logr "ERROR: Failed to unmount backup directory." 
+				exit 1
+		fi     
 }
 
 # ---- MAIN set ----
@@ -138,5 +134,5 @@ main () {
 }
 
 # ---- MAIN CALL ----
- main
+main
   check "CarbonSinc"
