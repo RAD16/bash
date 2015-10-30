@@ -4,7 +4,8 @@
 
 # Pair with systemd backup.service/backup.timer for hourly system snapshots. 
 
-# backup-0.2: places all backups in a directory "today.hourly" to eventually be cycled by day into  "yesterday.hourly," "daybefore.hourly" (backup-cycle.sh script). 
+# backup.cycle: places all backups in a directory "today.hourly" to eventually be
+# cycled by day into  "yesterday.hourly," "daybefore.hourly" (cycle.bkp.sh script). 
 
 # Increased security: mounts the backup partition, keeps it mounted only while backup is running, then unmounts it and removes the mount directory for added obscurity.
 
@@ -22,7 +23,7 @@
 
 # TO DO: script that triggers deletion of old backups upon low disk space. 
 
-#-----Variables-----
+#----- Variables -----
 sync_opt="-naPh"   # remove 'n' (dry run) option when ready 
 link="link-dest=${SEED}"
 data="/files/to/back/up/"
@@ -36,7 +37,7 @@ errlog="/var/log/bkp/err/"
 day=$(date +%Y-%m-%d)
 date=$(date +%Y-%m-%d_%T)
 
-#--------Script---------
+#-------- Script ---------
 # series of functions called by "main ()” at end of script:
     # main () {
     #   prep 
@@ -48,16 +49,16 @@ echo "CarbonSinc:"
 echo "backup scripted in BASH"
 sleep 2
 
-# error logger
+# ---- error logger ----
 logr () {
- if [ -f $errlog/$date.bkp.errlog ]; then
-   echo $1 | tee -a  $errlog/${date}.bkp.errlog
+ if [ -f ${errlog}/${date}.bkp.errlog ]; then
+   echo $1 | tee -a  ${errlog}/${date}.bkp.errlog
    else
-    echo $1 | tee $errlog/${date}.bkp.errlog 
+    echo $1 | tee ${errlog}/${date}.bkp.errlog 
  fi
 }
 
-# error code checker 
+# ---- error code checker ----
 check () {
  if [ $? -eq 0 ]; then
    echo "$1 -- done!"
@@ -67,25 +68,25 @@ check () {
  fi
 }
 
-# prep function: checks for/mounts needed directories
+# ---- function: checks for/mounts needed directories ----
 prep () {
 # check if bkp dir is mounted
-if [ ! -d $BDIR ]; then
+if [ ! -d $backup_dir ]; then
      # Create bkp directory 
-     mkdir $BDIR
+     mkdir $backup_dir
       check "Create backup directory"
  fi
      # Mount bkp partition to directory. 
-   mount $MNTOPT $BPART $BDIR
+   mount $mnt_opt $backup_part $backup_dir
      check "Mount backup partition"
       
    # Check for daily directory
-  if [ ! -d $TODAY ]; then
+  if [ ! -d $today ]; then
       # Create new directory if necessary.
-     mkdir $TODAY    
+     mkdir $today    
       check "Create today's backup directory"
   fi   
-#    chmod 700 $TODAY    
+#    chmod 700 $today    
 #     if [ $? -eq 0 ]; then
 #       echo "Today's backup directory locked by root."
 #     else
@@ -95,18 +96,18 @@ if [ ! -d $BDIR ]; then
 #  chown root:root necessary? 
 } 
 
-# backup function: rsync snapshot backup
+# ---- function: rsync snapshot backup ----
 backup () {
 # Run rsync bkp
 if [ -h $SEED ]; then
   echo "Running rsync..."
-  rsync $OPT $LINK $DATA $TODAY/$DATE.bkp > ${LOG}$DATE.bkp.log
+  rsync $sync_opt $link $data ${today/${DATE}.bkp > ${LOG}${DATE}.bkp.log
     check "rsync backup"
 # Remove symlink to previous backup
   rm -f $SEED
     check "remove previous seed file" 
 # Symlink to new latest backup
-  ln -s $TODAY/$DATE.bkp $SEED
+  ln -s ${today}/${DATE}.bkp $SEED
     check " symlinking new seed file"
 else 
   logr "ERROR - Could not locate latest bkp to hardlink. Symlink 'seed' file may need to be created." 
@@ -114,14 +115,14 @@ else
 fi
 }
  
-# cleanup function: unmounts and removes directories for security
+# ---- function: unmounts and removes directories for security ----
 cleanup () { 
 # Unmount bkp directory
-  umount -R  $BDIR
+  umount -R  $backup_dir
      if [ $? -eq 0 ]; then
        echo "Backup directory unmounted successfully."       
        # Remove bkp directory
-       rmdir  $BDIR
+       rmdir  $backup_dir
          check "remove backup directory"
      else
          logr "ERROR: Failed to unmount backup directory." 
@@ -129,11 +130,13 @@ cleanup () {
      fi     
 }
 
+# ---- MAIN set ----
 main () {
   prep 
   backup
   cleanup
 }
 
+# ---- MAIN CALL ----
  main
   check "CarbonSinc"
