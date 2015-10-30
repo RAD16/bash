@@ -1,0 +1,58 @@
+﻿#! /bin/bash
+
+# Install script for RAD custom kernels
+
+# Execute in the kernel source directory after "make" and "make modules_install"
+
+# Syntax:
+# ./install-rad.sh <FullKernelName> <RADxx>
+# where "xx" is the RAD version number
+# e.g. --  ./install-rad.sh 4.2.0-gnu_3.RAD16 RAD16
+ 
+ #---------script----------
+
+KERN=$1
+RAD=$2
+
+# maybe make path to built/ directory absolute?
+
+check() {
+ if [ $? ! -eq 0 ]; then
+   echo "ERROR -- $1 failed"
+   exit 1
+ fi 
+}
+
+kcopy() { 
+cp -v arch/x86_64/boot/bzImage /boot/vmlinuz-${RAD}
+  check "copy kernel to /boot"
+cp -v arch/x86_64/boot/bzImage ../built/vmlinuz-${RAD} 
+  check "copy backup kernel to built/ directory"
+}
+
+mkinit() {
+mkinitcpio -k ${KERN} -c /etc/mkinitcpio.conf -g /boot/initramfs-${RAD}.IMG
+  check "mkinitcpio image generation"
+cp /boot/initramfs-${RAD}.img ../built/initramfs-${KERN}.img
+  check "copy backup initramfs to built/ directory"
+}
+
+map() {
+cp System.map /boot/System.map-${KERN} 
+  check "copy System.map to /boot"
+ln -sf /boot/System.map-${KERN} /boot/System.map
+  check "symlink System.map"
+}
+
+main() {
+  kcopy
+  mkinit
+  map
+}
+
+main
+ if [ $? -eq 0 ]; then
+   echo " Installation complete!"
+  else
+   check "Installation"
+fi
