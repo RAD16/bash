@@ -37,15 +37,15 @@ errlog="/var/log/bkp/err/"
 day=$(date +%Y-%m-%d)
 date=$(date +%Y-%m-%d_%T)
 
-#-------- Script ---------
-# series of functions called by "main ()” at end of script:
+#====== Script ======
+# series of functions called by "main" at end of script:
     # main () {
     #   prep 
     #   backup
     #   cleanup
     # } 
 
-# ---- error logger ----
+#----- error logger -----
 logr () {
  if [ -f ${errlog}/${date}.bkp.errlog ]; then
    echo $1 | tee -a  ${errlog}/${date}.bkp.errlog
@@ -54,7 +54,7 @@ logr () {
  fi
 }
 
-# ---- error code checker ----
+#----- error code checker -----
 check () {
 	if [ $? -eq 0 ]; then
 		echo "$1 -- done!"
@@ -64,7 +64,7 @@ check () {
 	fi
 }
 
-# ---- function: checks for/mounts needed directories ----
+#----- Function: check for and mount needed directories -----
 prep () {
 # check if bkp dir is mounted
 	if [ ! -d $backup_dir ]; then
@@ -92,7 +92,7 @@ prep () {
 #  chown root:root necessary? 
 } 
 
-# ---- function: rsync snapshot backup ----
+#----- Function: rsync snapshot backup -----
 backup () {
 # Run rsync bkp
 	if [ -h $seed ]; then
@@ -111,7 +111,7 @@ backup () {
 	fi
 }
  
-# ---- function: unmounts and removes directories for security ----
+#----- Function: unmount and remove directories for security -----
 cleanup () { 
 # Unmount bkp directory
 	umount -R  $backup_dir
@@ -126,13 +126,13 @@ cleanup () {
 		fi     
 }
 
-# ---- MAIN set ----
+#----- MAIN set -----
 main () {
   prep 
   backup
   cleanup
 }
 
-# ---- MAIN CALL ----
+#----- MAIN CALL -----
 main
   check "CarbonSinc"
