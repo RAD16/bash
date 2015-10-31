@@ -24,7 +24,7 @@ date=$(date +%Y-%m-%d_%T)
 
 #----- error logger -----
 logr () {
- logfile="/var/log/bkp/errlog/${date}.bkp.errlog"
+ logfile="/var/log/bkp/errlog/"$date".bkp.errlog"
   if [ -f $logfile ]; then
     echo $1 | tee -a $logfile
   else
@@ -62,49 +62,73 @@ prep () {
 
 #----- Function: cycle daily directories ----- 
 daycycle () {
- # function variables
-one="/root/soil/today.hourly/"
-two="/root/soil/yesterday.hourly/"
-three="/root/soil/daybefore.hourly/"
-WI="/root/soil/dailies/days_1.daily/"
-   # Save daily backup
-  keep=$(ls $three -1|tail -1)
+ # Recycle backups
+# one="/root/soil/today.hourly/"
+# two="/root/soil/yesterday.hourly/"
+# three="/root/soil/daybefore.hourly/"
+# WI="/root/soil/dailies/days_1.daily/"
+ 
+	one="SANDBOX/today.hourly"
+	two="SANDBOX/yesterday.hourly"
+	three="SANDBOX/daybefore.hourly"
+	WI="SANDBOX/dailies/days_1.daily"
+
+	
+		# Save daily backup
+  keep=($(ls "$three" -1|tail -1))
+	echo "$keep"
+  echo "$three"/"$keep"
   echo "_Cycling through backups:"
-  mv ${three}/${KEEP} $WI
+  mv "$three"/"$keep" "$WI"
      check "saving day-3 backup"       
-  rm -rf $three
+  rm -rf ${three}
      check "removing day-3 directory"
 
 # make sure variables set such that the directory is renamed not moved into another directory. 
-  mv $two $three
+  mv "$two" "$three"
      check "day-2 renamed day-3"
-  mv $one $two
+  mv "$one" "$two"
      check "day-1 renamed day-2"
-  mkdir $one 
+  mkdir "$one"
      check "create day-1 directory"
+ echo "today folder: `ls "$one" -1 | wc -l`"
+ echo "yesterday folder: `ls "$two" -1 | wc -l`"
+ echo "daybefore folder: `ls "$three" -1 | wc -l`"
  }
  
 #----- Function: cycle weekly directories -----
 weekcycle () {
  # Save weekly backup  
- WI="/root/soil/dailies/days_1.daily/"
- WII="/root/soil/dailies/days_2.daily/"
- weeks="/root/soil/weeks.weekly/"
-  count=$(ls $WI -1 | wc -l)
-  keep_week=$(ls $WII -1|tail -1)
- if [ $count -gt 7 ]; then 
-   mv $WII/${keep_week} $weeks
+ # WI="/root/soil/dailies/days_1.daily"
+ # WII="/root/soil/dailies/days_2.daily"
+ # weeks="/root/soil/weeks.weekly"
+ 
+	WI="SANDBOX/dailies/days_1.daily"
+  WII="SANDBOX/dailies/days_2.daily"
+  weeks="SANDBOX/weeks.weekly"
+  count_w1=($(ls "$WI" -1 | wc -l))
+  count_w2=($(ls "$WII" -1 | wc -l))
+  keep_week=($(ls "$WII" -1 | tail -l))
+ echo "week 1 count is: $count_w1"
+ echo "week 2 count is: $count_w2"
+ if [ "$count_w1" -gt 7 ]; then
+	 echo "week 2 has more than 7!"
+	 echo "keeping: "$keep_week""
+   mv "$WII"/"$keep_week" "$weeks"
     check "save weekly backup to weeks directory"
-   rm -rf $WII
+   rm -rf "$WII"
      check "remove days_2.daily directory"
-   mv $WI $WII
+   mv "$WI" "$WII"
      check " directory 'days_1.weekly' renamed 'days_2'"
-   mkdir $WI
+   mkdir "$WI"
      check "create days_1 directory"
  else
    echo "No new weeklies"
  fi
+  echo "Week 2 list: `ls "$WII"`"
+  echo "Weeklies: `ls "$weeks"`"
 }
+
 
 #----- Function: unmount backup partitions -----
 cleanup () {
