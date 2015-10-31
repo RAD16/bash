@@ -84,6 +84,7 @@ weekcycle () {
    echo "No new weeklies"
  fi
   echo "Week 2 list: `ls "$WII"`"
+  echo "Weeklies: `ls "$weeks"`"
 }
 
 fill () {
