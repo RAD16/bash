@@ -19,6 +19,7 @@ check () {
   fi
 }
 
+	one="SANDBOX/today.hourly"
 daycycle () {
  # Recycle backups
 # one="/root/soil/today.hourly/"
@@ -33,21 +34,22 @@ daycycle () {
 
 	
 		# Save daily backup
-  keep=$(ls $three -1|tail -1)
+  keep=($(ls "$three" -1|tail -1))
 	echo "$keep"
+  echo "$three"/"$keep"
   echo "_Cycling through backups:"
-  mv ${three}/${KEEP} $WI
-  echo "moving "${three}/${KEEP}" into "$WI""
+  mv "$three"/"$keep" "$WI"
+  echo "moving "$three"/"$keep" into "$WI""
      check "saving day-3 backup"       
   rm -rf ${three}
      check "removing day-3 directory"
 
 # make sure variables set such that the directory is renamed not moved into another directory. 
-  mv $two $three
+  mv "$two" "$three"
      check "day-2 renamed day-3"
-  mv $one $two
+  mv "$one" "$two"
      check "day-1 renamed day-2"
-  mkdir $one 
+  mkdir "$one"
      check "create day-1 directory"
  }
  
@@ -76,17 +78,20 @@ weekcycle () {
  fi
 }
 
+fill () {
 ### Fill the today.hourly directory: 
 	dt=`date +%T`
-	touch ${one}/A.${dt}
-	touch ${one}/B.${dt}
-	touch ${one}/C.${dt}
-	touch ${one}/D.${dt}
-	touch ${one}/E.${dt}
-	touch ${one}/F.${dt}
-	touch ${one}/G.${dt}
+	touch "$one"/A."$dt"
+	touch "$one"/B."$dt"
+	touch "$one"/C."$dt"
+	touch "$one"/D."$dt"
+	touch "$one"/E."$dt"
+	touch "$one"/F."$dt"
+	touch "$one"/G."$dt"
+}
  
  main () {
+	fill
   daycycle
 #  weekcycle
 }
