@@ -4,7 +4,7 @@
 # Cycle through old backups. Keep hourly backups up to three days, then keep one backup per day after that.
 # cycle.bkp.sh:  Uses named daily directories e.g. "today," "yesterday," "day_before" etc. and cycles through them daily,
 
-# systemd timer/service files should be configured such that recycle script only runs after backup script has finished and isn't running, so they don't run  simultaneously.
+# systemd timer/service files should be configured such that cycle script only runs after backup script has finished and isn't running, so they don't run  simultaneously.
 
 # TO DO: function that sends alerts and deletes old backups if backup disk space drops below certain threshold.
 
@@ -35,7 +35,7 @@ logr () {
 #----- error code checker -----
 check () {
   if [ $? -eq 0 ]; then
-    echo "$1 -- done!"
+    echo "--> $1 -- done!"
   else
     logr "ERROR: $1 failed."
     exit 1
@@ -55,7 +55,7 @@ prep () {
    fi
 
  # Mount bkp partition to directory. Mount nodev, noexec, nosuid
- mount_opt="-o nodev,nosuid,noexec"
+	mount_opt="-o nodev,nosuid,noexec"
    mount $mount_opt $backup_part $backup_dir
      check "mount backup directory"
 }
@@ -63,17 +63,16 @@ prep () {
 #----- Function: cycle daily directories ----- 
 daycycle () {
  # Recycle backups
-# one="/root/soil/today.hourly/"
-# two="/root/soil/yesterday.hourly/"
-# three="/root/soil/daybefore.hourly/"
-# WI="/root/soil/dailies/days_1.daily/"
- 
-	one="SANDBOX/today.hourly"
-	two="SANDBOX/yesterday.hourly"
-	three="SANDBOX/daybefore.hourly"
-	WI="SANDBOX/dailies/days_1.daily"
+	# one="SANDBOX/today.hourly"
+	# two="SANDBOX/yesterday.hourly"
+	# three="SANDBOX/daybefore.hourly"
+	# WI="SANDBOX/dailies/days_1.daily"
 
-	
+one="/root/soil/today.hourly"
+two="/root/soil/yesterday.hourly"
+three="/root/soil/daybefore.hourly"
+WI="/root/soil/dailies/days_1.daily"
+
 		# Save daily backup
   keep=($(ls "$three" -1|tail -1))
 	echo "$keep"
@@ -95,17 +94,18 @@ daycycle () {
  echo "yesterday folder: `ls "$two" -1 | wc -l`"
  echo "daybefore folder: `ls "$three" -1 | wc -l`"
  }
- 
+
 #----- Function: cycle weekly directories -----
 weekcycle () {
  # Save weekly backup  
- # WI="/root/soil/dailies/days_1.daily"
- # WII="/root/soil/dailies/days_2.daily"
- # weeks="/root/soil/weeks.weekly"
- 
-	WI="SANDBOX/dailies/days_1.daily"
-  WII="SANDBOX/dailies/days_2.daily"
-  weeks="SANDBOX/weeks.weekly"
+	# WI="SANDBOX/dailies/days_1.daily"
+  # WII="SANDBOX/dailies/days_2.daily"
+  # weeks="SANDBOX/weeks.weekly"
+
+	WI="/root/soil/dailies/days_1.daily"
+	WII="/root/soil/dailies/days_2.daily"
+	weeks="/root/soil/weeks.weekly"
+	
   count_w1=($(ls "$WI" -1 | wc -l))
   count_w2=($(ls "$WII" -1 | wc -l))
   keep_week=($(ls "$WII" -1 | tail -l))
@@ -129,7 +129,6 @@ weekcycle () {
   echo "Weeklies: `ls "$weeks"`"
 }
 
-
 #----- Function: unmount backup partitions -----
 cleanup () {
  #umount partition
@@ -143,7 +142,7 @@ cleanup () {
      exit 1
    fi
  }
- 
+
  #----- MAIN set -----
  main () {
   prep

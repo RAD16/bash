@@ -29,7 +29,7 @@ data="/files/to/back/up/"
 backup_part="/dev/sda-whatever/"
 mnt_opt="-o nodev,noexec,nosuid"     # -U 'uuid number here' 
 backup_dir="/root/soil"
-today="/root/soil/today.hourly/"
+today="/root/soil/today.hourly"
 seed="/root/soil/seed"  # symlink to latest backup used by rsync to hardlink unchanged files
 link="link-dest=${seed}"
 log="/var/log/bkp/"
@@ -47,17 +47,17 @@ date=$(date +%Y-%m-%d_%T)
 
 #----- error logger -----
 logr () {
- if [ -f ${errlog}/${date}.bkp.errlog ]; then
-   echo $1 | tee -a  ${errlog}/${date}.bkp.errlog
+ if [ -f "$errlog"/"$date".bkp.errlog ]; then
+   echo $1 | tee -a  "$errlog"/"$date".bkp.errlog
    else
-    echo $1 | tee ${errlog}/${date}.bkp.errlog 
+    echo $1 | tee "$errlog"/"$date".bkp.errlog 
  fi
 }
 
 #----- error code checker -----
 check () {
 	if [ $? -eq 0 ]; then
-		echo "$1 -- done!"
+		echo "--> $1 -- done!"
 	else
 		logr "ERROR: $1 failed"
 		exit 1
@@ -67,19 +67,19 @@ check () {
 #----- Function: check for and mount needed directories -----
 prep () {
 # check if bkp dir is mounted
-	if [ ! -d $backup_dir ]; then
+	if [ ! -d "$backup_dir" ]; then
 			# Create bkp directory 
-			mkdir $backup_dir
+			mkdir "$backup_dir"
 				check "Create backup directory"
 	fi
 			# Mount bkp partition to directory. 
-		mount $mnt_opt $backup_part $backup_dir
+		mount "$mnt_opt" "$backup_part" "$backup_dir"
 			check "Mount backup partition"
 				
 		# Check for daily directory
-	if [ ! -d $today ]; then
+	if [ ! -d "$today" ]; then
 				# Create new directory if necessary.
-			mkdir $today    
+			mkdir "$today"
 				check "Create today's backup directory"
 	fi   
 #    chmod 700 $today    
@@ -95,15 +95,15 @@ prep () {
 #----- Function: rsync snapshot backup -----
 backup () {
 # Run rsync bkp
-	if [ -h $seed ]; then
+	if [ -h "$seed" ]; then
 		echo "Running rsync..."
-		rsync $sync_opt $link $data ${today/${DATE}.bkp > ${LOG}${DATE}.bkp.log
+		rsync $sync_opt $link $data "$today"/"$DATE".bkp > "$LOG""$DATE".bkp.log
 			check "rsync backup"
 # Remove symlink to previous backup
-		rm -f $seed
+		rm -f "$seed"
 			check "remove previous seed file" 
 # Symlink to new latest backup
-		ln -s ${today}/${date}.bkp $seed
+		ln -s "$today"/"$date".bkp "$seed"
 			check " symlinking new seed file"
 	else 
 		logr "ERROR - Could not locate latest bkp to hardlink. Symlink 'seed' file may need to be created." 
@@ -114,11 +114,11 @@ backup () {
 #----- Function: unmount and remove directories for security -----
 cleanup () { 
 # Unmount bkp directory
-	umount -R  $backup_dir
+	umount -R  "$backup_dir"
 		if [ $? -eq 0 ]; then
 			echo "Backup directory unmounted successfully."       
 			# Remove bkp directory
-			rmdir  $backup_dir
+			rmdir  "$backup_dir"
 				check "remove backup directory"
 		else
 				logr "ERROR: Failed to unmount backup directory." 
