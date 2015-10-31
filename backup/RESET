@@ -7,7 +7,7 @@ rm -r SANDBOX
 mkdir SANDBOX
 
 mkdir SANDBOX/dailies SANDBOX/daybefore.hourly SANDBOX/weeks.weekly SANDBOX/yesterday.hourly SANDBOX/today.hourly
-mkdir SANDBOX/dailies/days_1.daily SANDBOX/dailies/days_2.dailies 
+mkdir SANDBOX/dailies/days_1.daily SANDBOX/dailies/days_2.daily 
 
 ### Fill the today.hourly directory: 
 	touch "$one"/A."$dt"

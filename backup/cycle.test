@@ -59,19 +59,20 @@ weekcycle () {
  # WII="/root/soil/dailies/days_2.daily"
  # weeks="/root/soil/weeks.weekly"
  
- WI="SANDBOX/dailies/days_1.daily"
+	WI="SANDBOX/dailies/days_1.daily"
   WII="SANDBOX/dailies/days_2.daily"
   weeks="SANDBOX/weeks.weekly"
-  count=$(ls $WI -1 | wc -l)
-  keep_week=$(ls $WII -1|tail -1)
- if [ $count -gt 7 ]; then 
-   mv $WII/${keep_week} $weeks
+  count=($(ls "$WI" -1 | wc -l))
+  keep_week=($(ls $WII -1|tail -1))
+ if [ "$count" -gt 7 ]; then 
+	 echo "Count is greater than 7!"
+   mv "$WII"/"$keep_week" "$weeks"
     check "save weekly backup to weeks directory"
-   rm -rf $WII
+   rm -rf "$WII"
      check "remove days_2.daily directory"
-   mv $WI $WII
+   mv "$WI" "$WII"
      check " directory 'days_1.weekly' renamed 'days_2'"
-   mkdir $WI
+   mkdir "$WI"
      check "create days_1 directory"
  else
    echo "No new weeklies"
@@ -93,7 +94,7 @@ fill () {
  main () {
 	fill
   daycycle
-#  weekcycle
+	weekcycle
 }
 
 main
