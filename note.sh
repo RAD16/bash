@@ -1,6 +1,6 @@
 #! /bin/bash
 
-_file="$HOME/notes/`date +%Y-%m-%d`"
+_note="$HOME/notes/`date +%Y-%m-%d`"
 _notesdir="$HOME/notes/"
 _datelong=`date +%A,\ %b\ %d,\ %Y`
 _dateshort=`date +%Y-%m-%d`
@@ -22,10 +22,10 @@ if [ $# -eq 1 ]; then
 	fi
 fi
 
-if [ ! -e "$_file" ]; then 
-	touch "$_file"
-	echo "$_datelong" >> "$_file"
-	echo "======================" >> "$_file"
+if [ ! -e "$_note" ]; then 
+	touch "$_note"
+	echo "$_datelong" >> "$_note"
+	echo "======================" >> "$_note"
 	vim ~/notes/`date +%Y-%m-%d`
 fi
 
