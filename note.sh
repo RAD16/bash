@@ -11,14 +11,19 @@ if [ $# -gt 1 ]; then
 fi
 
 if [ $# -eq 1 ]; then
-	_argfile="$_notesdir""$1"
-	if [ -e "$_argfile" ]; then
-		vim "$_argfile"
+	if [ $1 = "ls" ]; then
+		echo "listysauce!"
+		exit 0
 	else
-		touch "$_argfile"
-		echo "$_dateshort" >> "$_argfile"
-		echo "---------" >> "$_argfile"
-		vim "$_argfile"
+		_argfile="$_notesdir""$1"
+		if [ -e "$_argfile" ]; then
+			vim "$_argfile"
+		else
+			touch "$_argfile"
+			echo "$_dateshort" >> "$_argfile"
+			echo "---------" >> "$_argfile"
+			vim "$_argfile"
+		fi
 	fi
 fi
 
