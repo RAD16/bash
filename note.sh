@@ -26,7 +26,7 @@ if [ ! -e "$_note" ]; then
 	touch "$_note"
 	echo "$_datelong" >> "$_note"
 	echo "======================" >> "$_note"
-	vim ~/notes/`date +%Y-%m-%d`
+	vim "$_note"
 fi
 
-vim ~/notes/`date +%Y-%m-%d`
+vim "$_note"
