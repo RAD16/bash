@@ -3,15 +3,11 @@
 _file="$HOME/notes/`date +%Y-%m-%d`"
 _date=`date +%A_%b_%d,_%Y`
 
-if [ -e "$_file" ]; then 
-	echo "gwangy sauce!"
-	vim "$_file"
-else
-	echo "empty sauce"
+if [ ! -e "$_file" ]; then 
 	touch "$_file"
-	echo "Notes:" >> ~/notes/`date +%Y-%m-%d` 
-	echo "$_date" >> ~/notes/`date +%Y-%m-%d` 
+	echo "Notes:" >> "$_file"
+	echo "$_date" >> "$_file"
 	vim ~/notes/`date +%Y-%m-%d`
 fi
 
-
+vim ~/notes/`date +%Y-%m-%d`
