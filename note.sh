@@ -1,7 +1,7 @@
 #! /bin/bash
 
 _file="$HOME/notes/`date +%Y-%m-%d`"
-_fileprefix="$HOME/notes/"
+_notesdir="$HOME/notes/"
 _datelong=`date +%A,\ %b\ %d,\ %Y`
 _dateshort=`date +%Y-%m-%d`
 
@@ -11,7 +11,7 @@ if [ $# -gt 1 ]; then
 fi
 
 if [ $# -eq 1 ]; then
-	_argfile="$_fileprefix""$1"
+	_argfile="$_notesdir"$1"
 	if [ -e "$_argfile" ]; then
 		vim "$_argfile"
 	else
