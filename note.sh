@@ -6,10 +6,15 @@ _datelong=`date +%A,\ %b\ %d,\ %Y`
 _dateshort=`date +%Y-%m-%d`
 
 if [ $# -eq 1 ]; then
-	_argfile="$#"
-	touch "$_argfile"
-	echo "$_dateshort" >> "$_argfile"
-	vim "$_argfile"
+	_argfile="$1"
+	if [ -e "$_argfile" ]; then
+		vim "$_argfile"
+	else
+		touch "$_argfile"
+		echo "$_dateshort" >> "$_argfile"
+		echo "---------" >> "$_argfile"
+		vim "$_argfile"
+	fi
 fi
 
 if [ ! -e "$_file" ]; then 
