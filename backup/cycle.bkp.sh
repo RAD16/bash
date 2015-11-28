@@ -24,12 +24,12 @@ date=$(date +%Y-%m-%d_%T)
 
 #----- error logger -----
 logr () {
- logfile="/var/log/bkp/errlog/"$date".bkp.errlog"
-  if [ -f $logfile ]; then
-    echo $1 | tee -a $logfile
-  else
-    echo $1 | tee $logfile
-  fi
+	logfile="/var/log/bkp/errlog/"$date".bkp.errlog"
+		if [ -f $logfile ]; then
+				echo $1 | tee -a $logfile
+		else
+			echo $1 | tee $logfile
+		fi
 }
 
 #----- error code checker -----
