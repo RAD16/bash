@@ -11,7 +11,7 @@ if [ $# -gt 1 ]; then
 fi
 
 if [ $# -eq 1 ]; then
-	_argfile="$_notesdir"$1"
+	_argfile="$_notesdir""$1"
 	if [ -e "$_argfile" ]; then
 		vim "$_argfile"
 	else
