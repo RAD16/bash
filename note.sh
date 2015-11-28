@@ -6,7 +6,7 @@ _datelong=`date +%A,\ %b\ %d,\ %Y`
 _dateshort=`date +%Y-%m-%d`
 
 if [ $# -eq 1 ]; then
-	_argfile="$1"
+	_argfile="$_fileprefix""$1"
 	if [ -e "$_argfile" ]; then
 		vim "$_argfile"
 	else
