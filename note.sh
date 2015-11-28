@@ -12,7 +12,11 @@ fi
 
 if [ $# -eq 1 ]; then
 	if [ $1 = "ls" ]; then
-		echo "listysauce!"
+		echo " "
+		echo "Notes Directory"
+		echo "---------------"
+		ls "$_notesdir"
+		echo " "
 		exit 0
 	else
 		_argfile="$_notesdir""$1"
