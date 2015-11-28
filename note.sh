@@ -1,6 +1,6 @@
 #! /bin/bash
 
-_note="$HOME/notes/`date +%Y-%m-%d`"
+_note="${_notesdir}`date +%Y-%m-%d`"
 _notesdir="$HOME/notes/"
 _datelong=`date +%A,\ %b\ %d,\ %Y`
 _dateshort=`date +%Y-%m-%d`
