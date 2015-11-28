@@ -5,6 +5,11 @@ _fileprefix="$HOME/notes/"
 _datelong=`date +%A,\ %b\ %d,\ %Y`
 _dateshort=`date +%Y-%m-%d`
 
+if [ $# -gt 1 ]; then 
+	echo "Too many arguments!"
+	exit 0
+fi
+
 if [ $# -eq 1 ]; then
 	_argfile="$_fileprefix""$1"
 	if [ -e "$_argfile" ]; then
