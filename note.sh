@@ -1,11 +1,11 @@
 #! /bin/bash
 
 _file="$HOME/notes/`date +%Y-%m-%d`"
-_fileprefix="$HOME/notes"
+_fileprefix="$HOME/notes/"
 _date=`date +%A,\ %b\ %d,\ %Y`
 
 if [ $# -eq 1 ]; then
-	vim "$_fileprefix/$#"
+	vim "$_fileprefix""$1"
 fi
 
 if [ ! -e "$_file" ]; then 
