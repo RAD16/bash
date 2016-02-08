@@ -21,12 +21,14 @@ if [ $# -eq 1 ]; then
 	else
 		_argfile="$_notesdir""$1"
 		if [ -e "$_argfile" ]; then
-			vim "$_argfile"
+			vis "$_argfile"
+			exit 0
 		else
 			touch "$_argfile"
 			echo "$_dateshort" >> "$_argfile"
 			echo "---------" >> "$_argfile"
-			vim "$_argfile"
+			vis "$_argfile"
+			exit 0
 		fi
 	fi
 fi
@@ -35,7 +37,9 @@ if [ ! -e "$_note" ]; then
 	touch "$_note"
 	echo "$_datelong" >> "$_note"
 	echo "======================" >> "$_note"
-	vim "$_note"
+	vis "$_note"
+	exit 0
 fi
 
-vim "$_note"
+vis "$_note"
+exit 0
